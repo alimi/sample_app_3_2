@@ -38,6 +38,14 @@ describe "UserPages" do
       it "should create a user" do
         expect { click_button "Sign up" }.to change(User, :count).by(1)
       end 
+
+      describe "after saving the user" do
+        before { click_button "Sign up" }
+        let(:user) { User.find_by_email('user@example.com') }
+
+        it { should have_selector('title', text: user.name) }
+        it { should have_selector('div.flash.success', text: 'Welcome') }
+      end
     end
   end
 end
