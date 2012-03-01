@@ -18,3 +18,9 @@ RSpec::Matchers.define :have_error_message do |message|
     page.should have_selector('div.flash.error', text: message)
   end
 end
+
+RSpec::Matchers.define :have_title do |name|
+  match do |page|
+    page.should have_selector('title', text: name)
+  end
+end
