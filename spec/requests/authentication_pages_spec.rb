@@ -15,7 +15,12 @@ describe "AuthenticationPages" do
       it { should have_title('Sign in') }
       it { should have_error_message('Invalid') }
 
-      describe "after visiting antoehr page" do
+      it { should_not have_link('Users', href: users_path) }
+      it { should_not have_link('Profile') }
+      it { should_not have_link('Settings') }
+      it { should_not have_link('Sign out', href: signout_path) }
+
+      describe "after visiting another page" do
         before { click_link "Home" }
         it { should_not have_error_message }
       end
@@ -69,6 +74,13 @@ describe "AuthenticationPages" do
           it "should render the desired protected page" do
             page.should have_selector('title', text: 'Edit user')
           end
+
+          describe "after signing in again" do
+            before { sign_in user }
+            it "should render default (profile) page" do
+              page.current_path.should == user_path(user)
+            end
+          end
         end
       end
 
@@ -103,6 +115,21 @@ describe "AuthenticationPages" do
       describe "submitting a DELETE request to Users#destroy action" do
         before { delete user_path(user) }
         specify { response.should redirect_to(root_path) } end
+    end
+
+    describe "as signed in user" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+
+      describe "visiting Users#new page" do
+        before { visit new_user_path }
+        specify { current_path.should == root_path }
+      end
+
+      describe "submitting a POST to Users#create action" do
+        before { post users_path }
+        specify { response.should redirect_to(root_path) }
+      end
     end
   end
 end
