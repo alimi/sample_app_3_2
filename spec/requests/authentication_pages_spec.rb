@@ -39,6 +39,25 @@ describe "AuthenticationPages" do
       it { should have_link('Sign out', href: signout_path) }
       it { should_not have_link('Sign in', href: signin_path) }
 
+      describe "user info sidebar" do
+        let(:user) { FactoryGirl.create(:user) }
+
+        describe "micropost section" do
+          let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+
+          describe "with micropost count of one" do
+            before { visit root_path }
+            it{ should have_selector('span.microposts', text: '1 micropost') }
+          end
+
+          describe "with micropost count of one" do
+            let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+            before { visit root_path }
+            it{ should have_selector('span.microposts', text: '2 microposts') }
+          end
+        end
+      end
+
       describe "followed by signout" do
         before { click_link "Sign out" }
         it { should have_link('Sign in') }

@@ -77,6 +77,35 @@ describe "UserPages" do
       it { should have_content(m1.content) }
       it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
+
+      describe "micropost pagination" do
+        before do 
+          30.times{ Factory.create(:micropost, user: user, content: "Foo") }
+          visit user_path(user)
+        end
+
+        it { should have_link('Next') }
+        it { should have_link('2') }
+      end
+    end
+  end
+
+  describe "user info sidebar" do
+    let(:user) { FactoryGirl.create(:user) }
+
+    describe "micropost section" do
+      let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+
+      describe "with micropost count of one" do
+        before { visit user_path(user) }
+        it{ should have_content "Microposts 1" }
+      end
+
+      describe "with micropost count of one" do
+        let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+        before { visit user_path(user) }
+        it{ should have_content "Microposts 2" }
+      end
     end
   end
 
@@ -158,5 +187,20 @@ describe "UserPages" do
       specify { user.reload.name.should == new_name }
       specify { user.reload.email.should == new_email }
     end
+  end
+end
+
+describe "visting another user's page" do
+  let(:signed_in_user) { Factory.create :user }
+  let(:other_user) { Factory.create :user }
+  let!(:micropost) { Factory.create :micropost, user: other_user, content: "Foo" }
+
+  before do 
+    sign_in signed_in_user
+    visit user_path(other_user) 
+  end
+
+  describe "should not see delete link for another user's micropost" do
+    it { should_not have_link('delete', href: micropost_path(micropost)) }
   end
 end

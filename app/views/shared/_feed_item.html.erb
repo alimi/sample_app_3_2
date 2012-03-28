@@ -6,16 +6,10 @@
     <span class="user">
       <%= link_to feed_item.user.name, feed_item.user %>
     </span>
-    <span class="content"><%= feed_item.content %></span>
+    <span class="content"><%= wrap(feed_item.content) %></span>
     <span class="timestamp">
-      Posted <%= time_ago_in_words(feed_item.created_at) %>.ago.
+      Posted <%= time_ago_in_words(feed_item.created_at) %> ago.
     </span>
   </td>
-  <% if current_user?(feed_item.user) %>
-    <td>
-      <%= link_to "delete", feed_item, method: :delete,
-                                       confirm: "You sure?",
-                                       title: feed_item.content %>
-    </td>
-  <% end %>
+  <%= render 'shared/delete_feed_item', feed_item: feed_item %>
 </tr>
