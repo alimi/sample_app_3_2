@@ -31,8 +31,6 @@ describe "AuthenticationPages" do
 
       before { valid_signin(user) }
 
-      it { should have_title(user.name) }
-
       it { should have_link('Users', href: users_path) }
       it { should have_link('Profile', href: user_path(user)) }
       it { should have_link('Settings', href: edit_user_path(user)) }
@@ -134,8 +132,8 @@ describe "AuthenticationPages" do
 
           describe "after signing in again" do
             before { sign_in user }
-            it "should render default (profile) page" do
-              page.current_path.should == user_path(user)
+            it "should render default (home) page" do
+              page.current_path.should == root_path
             end
           end
         end
