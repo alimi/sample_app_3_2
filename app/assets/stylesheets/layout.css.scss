@@ -254,3 +254,18 @@ span#character_counter{
   padding-right: 3em;
   font-size: 85%;
 }
+
+span.user_header {
+  position: absolute;
+
+  ul {
+    padding-left: 1em;
+    margin-top: -.25em;
+    li {
+      list-style-type: none;
+    }
+    li.main {
+      font-size: x-large;
+    }
+  }
+}

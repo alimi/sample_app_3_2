@@ -2,10 +2,14 @@
 <table class="profile">
   <tr>
     <td class="main">
-      <h1>
-        <%= gravatar_for @user %>
-        <%= @user.name %>
-      </h1>
+      <%= gravatar_for @user %>
+      <span class="user_header">
+        <ul>
+          <li class="main"><%= @user.name %></li>
+          <li><%= "@#{@user.username}" %></li>
+        </ul>
+      </span>
+      <br /><br />
       <%= render 'follow_form' if signed_in? %>
       <% if @user.microposts.any? %>
         <table class="microposts">

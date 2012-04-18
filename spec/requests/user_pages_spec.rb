@@ -70,7 +70,7 @@ describe "UserPages" do
 
     before { visit user_path(user) }
 
-    it { should have_selector('h1', text: user.name) }
+    it { should have_selector('li', text: user.name) }
     it { should have_title(user.name) }
 
     describe "microposts" do
@@ -190,6 +190,7 @@ describe "UserPages" do
       before do
         fill_in "Name",         with: "Example User"
         fill_in "Email",        with: "user@example.com"
+        fill_in "Username",     with: "example"
         fill_in "Password",     with: "foobar"
         fill_in "Confirmation", with: "foobar"
       end
