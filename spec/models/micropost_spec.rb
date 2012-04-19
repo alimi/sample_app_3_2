@@ -9,6 +9,8 @@ describe Micropost do
   it { should respond_to(:content) }
   it { should respond_to(:user_id) }
   it { should respond_to(:user) }
+  it { should respond_to(:in_reply_to_user_id) }
+  it { should respond_to(:in_reply_to_user) }
   its(:user) { should == user }
 
   it { should be_valid }
@@ -26,6 +28,16 @@ describe Micropost do
   describe "with content that is too long" do
     before { @micropost.content = "a" * 141 }
     it { should_not be_valid }
+  end
+
+  describe "in_reply_to_user" do
+    let(:in_reply_to_user) { FactoryGirl.create(:user) }
+    before do
+      @micropost.content = "@#{in_reply_to_user.username} content" 
+      @micropost.save!
+    end
+    
+    its(:in_reply_to_user) { should == in_reply_to_user }
   end
 
   describe "from_users_followed_by" do

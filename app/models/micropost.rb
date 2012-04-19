@@ -1,9 +1,16 @@
 class Micropost < ActiveRecord::Base
   attr_accessible :content
   belongs_to :user
+  belongs_to :in_reply_to_user, class_name: "User"
 
   validates :content, presence: true, length: { maximum: 140 }
   validates :user_id, presence: true
+
+  before_save do |record|
+    record.content.match(/^@\w+/) do |match|
+      record.in_reply_to_user = User.find_by_username(match[0].delete("@"))
+    end
+  end
 
   default_scope order: 'microposts.created_at DESC'
 
