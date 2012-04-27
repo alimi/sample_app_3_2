@@ -95,6 +95,11 @@ describe User do
     it { should_not be_valid }
   end
 
+  describe "when username includes blank character" do
+    before { @user.username = "user name" }
+    it { should_not be_valid }
+  end
+
   describe "when username is already taken" do
     before do
       other_user = @user.dup
