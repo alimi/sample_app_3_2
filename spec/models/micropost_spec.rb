@@ -57,4 +57,45 @@ describe Micropost do
     it { should include(followed_post) }
     it { should_not include(unfollowed_post) }
   end
+
+  describe "in_reply_to" do
+    let(:in_reply_to_user) { FactoryGirl.create(:user) }
+    let(:in_reply_to_post) do
+      in_reply_to_user.microposts.create!(content: "@#{user.username} content")
+    end
+    let(:unfollowed_post) do 
+      in_reply_to_user.microposts.create!(content: "foo")
+    end
+
+    subject { Micropost.in_reply_to(user) }
+    it { should include(in_reply_to_post) }
+    it { should_not include(unfollowed_post) }
+  end
+
+  describe "from_users_followed_by_and_in_reply_to" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:other_user) { FactoryGirl.create(:user) }
+    let(:third_user) { FactoryGirl.create(:user) }
+    let(:in_reply_to_user) { FactoryGirl.create(:user) }
+
+    before { user.follow!(other_user) }
+
+    let(:own_post) { user.microposts.create!(content: "foo") }
+    let(:followed_post) { other_user.microposts.create!(content: "bar") }
+    let(:unfollowed_post) { third_user.microposts.create!(content: "baz") }
+    let(:in_reply_to_post) do
+      in_reply_to_user.microposts.create!(content: "@#{user.username} content")
+    end
+    let(:unfollowed_reply_post) do 
+      in_reply_to_user.microposts.create!(content: "foo")
+    end
+
+    subject { Micropost.from_users_followed_by_and_in_reply_to(user) }
+
+    it { should include(own_post) }
+    it { should include(followed_post) }
+    it { should_not include(unfollowed_post) }
+    it { should include(in_reply_to_post) }
+    it { should_not include(unfollowed_reply_post) }
+  end
 end
