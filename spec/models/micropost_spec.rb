@@ -73,7 +73,7 @@ describe Micropost do
   end
 
   describe "from_users_followed_by_and_in_reply_to" do
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryGirl.create(:user, username: "user-1") }
     let(:other_user) { FactoryGirl.create(:user) }
     let(:third_user) { FactoryGirl.create(:user) }
     let(:in_reply_to_user) { FactoryGirl.create(:user) }

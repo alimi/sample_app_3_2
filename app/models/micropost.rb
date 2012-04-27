@@ -7,8 +7,8 @@ class Micropost < ActiveRecord::Base
   validates :user_id, presence: true
 
   before_save do |record|
-    record.content.match(/^@\w+/) do |match|
-      record.in_reply_to_user = User.find_by_username(match[0].delete("@"))
+    record.content.match(/^@(.+) /) do |match|
+      record.in_reply_to_user = User.find_by_username(match[1])
     end
   end
 
