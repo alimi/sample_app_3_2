@@ -31,6 +31,7 @@ describe User do
   it { should respond_to(:authenticate) }
   it { should respond_to(:authenticate) }
   it { should respond_to(:microposts) }
+  it { should respond_to(:in_reply_to_microposts) }
   it { should respond_to(:feed) }
   it { should respond_to(:relationships) }
   it { should respond_to(:followed_users) }
@@ -165,6 +166,11 @@ describe User do
         FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
       end
       let(:followed_user) { FactoryGirl.create(:user) }
+      let(:replying_user) { FactoryGirl.create(:user) }
+      let!(:replying_user_micropost) do 
+        FactoryGirl.create(:micropost, user: replying_user, 
+                           content: "@#{@user.username} content")
+      end
 
       before do
         @user.follow!(followed_user)
@@ -179,6 +185,7 @@ describe User do
           should include(micropost)
         end
       end
+      its(:feed) { should include(replying_user_micropost) }
     end
   end
 

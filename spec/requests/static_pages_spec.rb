@@ -18,29 +18,35 @@ describe "StaticPages" do
 
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
+      let(:other_user) { FactoryGirl.create(:user) }
+      let!(:micropost_reply) do 
+        FactoryGirl.create(:micropost, user: other_user, 
+                           content: "@#{user.username} content")
+      end
+
       before do
+        other_user.follow!(user)
         FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
         FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
         sign_in user
         visit root_path
       end
 
-      it "should render the user's feed" do
-        user.feed.each do |item|
-          page.should have_selector("tr##{item.id}", text: item.content)
+      describe "user feed" do
+        it "should render the feed" do
+          user.feed.each do |item|
+            page.should have_selector("tr##{item.id}", text: item.content)
+          end
+        end
+
+        it "should include @replies" do
+            page.should have_selector("tr##{micropost_reply.id}", 
+                                      text: micropost_reply.content)
         end
       end
 
-      describe "follower/following counts" do
-        let(:other_user) { FactoryGirl.create(:user) }
-        before do
-          other_user.follow!(user)
-          visit root_path
-        end
-
-        it { should have_link("0 following", href: following_user_path(user)) }
-        it { should have_link("1 follower", href: followers_user_path(user)) }
-      end
+      it { should have_link("0 following", href: following_user_path(user)) }
+      it { should have_link("1 follower", href: followers_user_path(user)) }
     end
   end
 
@@ -67,7 +73,7 @@ describe "StaticPages" do
 
     it_should_behave_like "all static pages"
   end
-  
+
   it "should have the right links on the layout" do
     visit root_path
     click_link "About"
