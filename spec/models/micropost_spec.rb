@@ -11,6 +11,7 @@ describe Micropost do
   it { should respond_to(:user) }
   it { should respond_to(:in_reply_to_user_id) }
   it { should respond_to(:in_reply_to_user) }
+  it { should respond_to(:direct_message?) }
   its(:user) { should == user }
 
   it { should be_valid }
@@ -38,6 +39,17 @@ describe Micropost do
     end
     
     its(:in_reply_to_user) { should == in_reply_to_user }
+  end
+
+  describe "direct_message" do
+    let(:dm_user) { FactoryGirl.create(:user) }
+    before do
+      @micropost.content = "d@#{dm_user.username} content" 
+      @micropost.save!
+    end
+    
+    specify { @micropost.should be_direct_message }
+    its(:in_reply_to_user) { should == dm_user }
   end
 
   describe "from_users_followed_by" do

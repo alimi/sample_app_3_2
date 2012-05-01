@@ -7,7 +7,11 @@ class Micropost < ActiveRecord::Base
   validates :user_id, presence: true
 
   before_save do |record|
-    record.content.match(/^@(\S+)/) do |match|
+    record.content.match(/^d@(\S+)/) do |match|
+      record.direct_message = true
+    end
+
+    record.content.match(/^d?@(\S+)/) do |match|
       record.in_reply_to_user = User.find_by_username(match[1])
     end
   end
