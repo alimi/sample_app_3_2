@@ -27,6 +27,8 @@ class Micropost < ActiveRecord::Base
   scope :direct_message_to,
     lambda { |user|
       where("in_reply_to_user_id = ? AND direct_message = 't'", user) }
+  scope :public_microposts_for,
+    lambda { |user| where("user_id = ? AND direct_message is null", user) }
 
   private
 

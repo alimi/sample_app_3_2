@@ -139,4 +139,19 @@ describe Micropost do
 
     it { should include(direct_message_post) }
   end
+
+  describe "public_microposts_for" do
+    let(:user) { Factory.create(:user) }
+    let(:other_user) { Factory.create(:user) }
+
+    let(:public_micropost) { user.microposts.create!(content: "Foo") }
+    let(:private_micropost) do 
+      user.microposts.create!(content: "d@#{other_user.username} private")
+    end
+
+    subject { Micropost.public_microposts_for(user) }
+
+    it { should include public_micropost }
+    it { should_not include private_micropost }
+  end
 end
