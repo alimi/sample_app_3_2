@@ -172,9 +172,18 @@ describe User do
       end
       let(:followed_user) { FactoryGirl.create(:user) }
       let(:replying_user) { FactoryGirl.create(:user) }
+      let(:dm_user) { FactoryGirl.create(:user) }
       let!(:replying_user_micropost) do 
         FactoryGirl.create(:micropost, user: replying_user, 
                            content: "@#{@user.username} content")
+      end
+      let!(:dm_user_micropost) do 
+        FactoryGirl.create(:micropost, user: dm_user, 
+                           content: "d@#{@user.username} content")
+      end
+      let!(:followed_user_dm_micropost) do 
+        FactoryGirl.create(:micropost, user: followed_user, 
+                           content: "d@#{dm_user.username} content")
       end
 
       before do
@@ -186,11 +195,16 @@ describe User do
       its(:feed) { should include(older_micropost) }
       its(:feed) { should_not include(unfollowed_post) }
       its(:feed) do
-        followed_user.microposts.each do |micropost|
+        followed_user_microposts = followed_user.microposts.select do |post|
+          !post.direct_message
+        end
+        followed_user_microposts.each do |micropost|
           should include(micropost)
         end
       end
       its(:feed) { should include(replying_user_micropost) }
+      its(:feed) { should include(dm_user_micropost) }
+      its(:feed) { should_not include(followed_user_dm_micropost) }
     end
   end
 

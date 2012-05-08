@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6 }
 
   def feed
-    Micropost.from_users_followed_by_and_in_reply_to(self)
+    Micropost.from_users_followed_by_and_in_reply_to_and_direct_message(self)
   end
 
   def following?(other_user)

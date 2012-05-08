@@ -19,9 +19,14 @@ describe "StaticPages" do
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
       let(:other_user) { FactoryGirl.create(:user) }
+      let(:dm_user) { FactoryGirl.create(:user) }
       let!(:micropost_reply) do 
         FactoryGirl.create(:micropost, user: other_user, 
                            content: "@#{user.username} content")
+      end
+      let!(:direct_message) do 
+        FactoryGirl.create(:micropost, user: dm_user, 
+                           content: "d@#{user.username} content")
       end
 
       before do
@@ -40,8 +45,13 @@ describe "StaticPages" do
         end
 
         it "should include @replies" do
-            page.should have_selector("tr##{micropost_reply.id}", 
-                                      text: micropost_reply.content)
+          page.should have_selector("tr##{micropost_reply.id}", 
+                                    text: micropost_reply.content)
+        end
+
+        it "should include direct messages" do
+          page.should have_selector("tr##{direct_message.id}", 
+                                    text: direct_message.content)
         end
       end
 
