@@ -22,8 +22,11 @@ class Micropost < ActiveRecord::Base
   scope :from_users_followed_by, lambda { |user| followed_by(user) }
 
   scope :in_reply_to, lambda { |user| where("in_reply_to_user_id = ?", user) }
-  scope :from_users_followed_by_and_in_reply_to, 
-   lambda{ |user| followed_by_or_in_reply_to(user) }
+  scope :from_users_followed_by_and_in_reply_to_and_direct_message,
+   lambda{ |user| followed_by_or_in_reply_to_or_direct_message(user) }
+  scope :direct_message_to,
+    lambda { |user|
+      where("in_reply_to_user_id = ? AND direct_message = 't'", user) }
 
   private
 
@@ -36,10 +39,10 @@ class Micropost < ActiveRecord::Base
           { user_id: user })
   end
 
-  def self.followed_by_or_in_reply_to(user)
+  def self.followed_by_or_in_reply_to_or_direct_message(user)
     followed_user_ids =  %(SELECT followed_id FROM relationships
                            WHERE follower_id = :user_id)
-    where(%(user_id IN (#{followed_user_ids}) OR
+    where(%((user_id IN (#{followed_user_ids}) AND direct_message is null) OR
             user_id = :user_id OR
             in_reply_to_user_id = :user_id),
           { user_id: user })

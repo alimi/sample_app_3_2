@@ -84,7 +84,7 @@ describe Micropost do
     it { should_not include(unfollowed_post) }
   end
 
-  describe "from_users_followed_by_and_in_reply_to" do
+  describe "from_users_followed_by_and_in_reply_to_and_direct_message" do
     let(:user) { FactoryGirl.create(:user, username: "user-1") }
     let(:other_user) { FactoryGirl.create(:user) }
     let(:third_user) { FactoryGirl.create(:user) }
@@ -101,13 +101,42 @@ describe Micropost do
     let(:unfollowed_reply_post) do 
       in_reply_to_user.microposts.create!(content: "foo")
     end
+    let(:direct_message_post) do
+      third_user.microposts.create!(content: "d@#{user.username} content")
+    end
+    let(:private_post) do
+      other_user.microposts.create!(content: "d@#{third_user.username} private")
+    end
 
-    subject { Micropost.from_users_followed_by_and_in_reply_to(user) }
+    subject do
+      Micropost.from_users_followed_by_and_in_reply_to_and_direct_message(user)
+    end
 
     it { should include(own_post) }
     it { should include(followed_post) }
     it { should_not include(unfollowed_post) }
     it { should include(in_reply_to_post) }
     it { should_not include(unfollowed_reply_post) }
+    it { should include(direct_message_post) }
+    it { should_not include(private_post) }
+  end
+
+  describe "direct_message_to" do
+    let(:user) { FactoryGirl.create(:user, username: "user-1") }
+    let(:dm_user) { FactoryGirl.create(:user) }
+    let(:third_user) { FactoryGirl.create(:user) }
+
+    before { user.follow!(third_user) }
+
+    let(:direct_message_post) do
+      dm_user.microposts.create!(content: "d@#{user.username} content")
+    end
+    let(:private_post) do
+      third_user.microposts.create!(content: "d@#{dm_user.username} private")
+    end
+
+    subject { Micropost.direct_message_to(user) }
+
+    it { should include(direct_message_post) }
   end
 end
