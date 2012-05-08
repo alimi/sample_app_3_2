@@ -31,6 +31,7 @@ describe User do
   it { should respond_to(:authenticate) }
   it { should respond_to(:authenticate) }
   it { should respond_to(:microposts) }
+  it { should respond_to(:public_microposts) }
   it { should respond_to(:in_reply_to_microposts) }
   it { should respond_to(:feed) }
   it { should respond_to(:relationships) }
@@ -206,6 +207,20 @@ describe User do
       its(:feed) { should include(dm_user_micropost) }
       its(:feed) { should_not include(followed_user_dm_micropost) }
     end
+  end
+
+  describe "public microposts" do
+    before { @user.save }
+
+    let(:other_user) { FactoryGirl.create(:user) }
+    let(:public_micropost) { FactoryGirl.create(:micropost, user: @user) } 
+    let(:private_micropost) do
+      FactoryGirl.create(:micropost, user: @user,
+        content: "d@#{other_user.username} private")
+    end
+
+    its(:public_microposts) { should include public_micropost }
+    its(:public_microposts) { should_not include private_micropost }
   end
 
   describe "following" do

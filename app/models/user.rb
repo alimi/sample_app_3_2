@@ -47,6 +47,10 @@ class User < ActiveRecord::Base
     relationships.find_by_followed_id(other_user.id).destroy
   end
 
+  def public_microposts
+    Micropost.public_microposts_for(self)    
+  end
+
   private
 
     def create_remember_token
