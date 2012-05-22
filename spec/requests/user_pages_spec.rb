@@ -129,6 +129,16 @@ describe "UserPages" do
           before { click_button "Follow" }
           it { should have_selector('input', value: 'Unfollow') }
         end
+
+        describe "following notification" do
+          before { click_button "Follow" }
+          
+          subject { ActionMailer::Base.deliveries.last }
+          
+          its(:subject) do
+            should =~ /@#{user.username} is now following you!/
+          end
+        end
       end
 
       describe "unfollowing a user" do
