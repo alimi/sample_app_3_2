@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<p>Hi @<%= @user.username %>,</p>
+
+<p><%= link_to "@#{@follower.username}", user_url(@follower) %>
+is now following you!</p>
+
+<p>Thanks,<br />
+The Sample App Team</p>
