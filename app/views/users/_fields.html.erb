@@ -19,3 +19,12 @@
   <%= f.label :password_confirmation, "Confirmation" %><br />
   <%= f.password_field :password_confirmation %><br />
 </div>
+<div class="field">
+  <span><strong>Receive Follower Notifications?</strong></span><br />
+  <%= f.fields_for :user_preference do |builder| %>
+    <%= builder.label :receive_follower_notification_1, "Yes" %>
+    <%= builder.radio_button :receive_follower_notification?, "1" %>
+    <%= builder.label :receive_follower_notification_0, "No" %>
+    <%= builder.radio_button :receive_follower_notification?, "0" %>
+  <% end %>
+</div>

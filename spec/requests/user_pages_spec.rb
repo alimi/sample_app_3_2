@@ -230,7 +230,7 @@ describe "UserPages" do
     let(:user) { FactoryGirl.create(:user) }
     before do
       sign_in user
-      visit edit_user_path(user) 
+      visit edit_user_path(user)
     end
 
     describe "page" do
@@ -264,6 +264,18 @@ describe "UserPages" do
       it { should have_link('Sign out', :href => signout_path) }
       specify { user.reload.name.should == new_name }
       specify { user.reload.email.should == new_email }
+
+      describe "receive follower notifications" do
+        before do
+          visit edit_user_path(user)
+          choose "No" 
+          fill_in "Password",     with: user.password
+          fill_in "Confirmation", with: user.password
+          click_button "Update"
+        end
+
+        specify { user.reload.receive_follower_notification?.should be_false }
+      end
     end
   end
 

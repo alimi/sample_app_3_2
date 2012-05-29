@@ -11,7 +11,8 @@
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :name, :email, :username, :password, :password_confirmation
+  attr_accessible :name, :email, :username, :password, :password_confirmation,
+    :user_preference_attributes
   has_secure_password
   has_many :microposts, dependent: :destroy
   has_many :in_reply_to_microposts, class_name: "Micropost" 
@@ -21,7 +22,12 @@ class User < ActiveRecord::Base
                                    class_name: "Relationship",
                                    dependent: :destroy
   has_many :followers, through: :reverse_relationships
+  has_one :user_preference, dependent: :destroy
+  accepts_nested_attributes_for :user_preference
   before_save :create_remember_token
+  after_save :create_user_preference
+
+  delegate :receive_follower_notification?, to: :user_preference
 
   validates :name, presence: true, length: { maximum: 50 }
   valid_email_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -55,5 +61,9 @@ class User < ActiveRecord::Base
 
     def create_remember_token
       self.remember_token = SecureRandom.urlsafe_base64
+    end
+
+    def create_user_preference
+      self.create_user_preference! if created_at_changed?
     end
 end

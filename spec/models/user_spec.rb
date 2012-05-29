@@ -41,6 +41,7 @@ describe User do
   it { should respond_to(:following?) }
   it { should respond_to(:follow!) }
   it { should respond_to(:unfollow!) }
+  it { should respond_to(:receive_follower_notification?) }
 
   it { should be_valid }
   it { should_not be_admin }
@@ -276,5 +277,11 @@ describe User do
         Relationship.find_by_id(reverse_relationship.id).should be_nil
       end
     end
+  end
+
+  describe "user_preference" do
+    before { @user.save }
+    its(:user_preference) { should_not be_nil }
+    its(:receive_follower_notification?) { should be_true }
   end
 end
