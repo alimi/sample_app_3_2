@@ -131,12 +131,30 @@ describe "UserPages" do
         end
 
         describe "following notification" do
-          before { click_button "Follow" }
-          
-          subject { ActionMailer::Base.deliveries.last }
-          
-          its(:subject) do
-            should =~ /@#{user.username} is now following you!/
+          describe "followed user receives notifcations" do
+            before { click_button "Follow" }
+            subject { ActionMailer::Base.deliveries.last }
+
+            its(:subject) do
+              should =~ /@#{user.username} is now following you!/
+            end
+          end
+
+          describe "followed user does not receive notifications" do
+            before do
+              other_user.update_attributes(
+                user_preference_attributes:
+                { receive_follower_notification: false } )
+
+              ActionMailer::Base.deliveries.clear
+
+              visit user_path(other_user)
+              click_button "Follow"
+            end
+
+            subject { ActionMailer::Base.deliveries.last }
+
+            it { should be_nil }
           end
         end
       end
