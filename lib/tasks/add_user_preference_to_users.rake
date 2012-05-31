@@ -2,7 +2,7 @@ namespace :db do
   desc "Add user_preference to existing users who do not have one"
   task add_user_preference_to_users: :environment do
     users_to_update = UserPreference.count == 0 ?
-      User.all.map(&:id) :
+      User.all
       User.where("id not in (?)",
                  UserPreference.select("user_id").map(&:user_id))
 
